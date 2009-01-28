@@ -1,0 +1,12 @@
+(
+ (:name "player" :type :image :file "voyager-normal.png")
+ (:name	"star" :type :image :file "star.png")
+ (:name	"small-star" :type :image :file "small-star.png")
+ (:name	"void" :type :image :file "starfield.png")
+ (:name	"starfield" :type :image :file "starfield.png")
+
+ (:name ".startup" :type :lisp :file "rlxtest.lisp")
+)
+
+
+

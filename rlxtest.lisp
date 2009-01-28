@@ -108,7 +108,7 @@
     [set-world viewport world]
     [resize viewport :height 320 :width 400]
     [move viewport :x 0 :y 0]
-    [set-origin viewport :x 0 :y 110 :height 20 :width 25]
+    [set-origin viewport :x 10 :y 90 :height 20 :width 25]
     [adjust viewport]
 
     (install-widgets (list viewport player-prompt))))

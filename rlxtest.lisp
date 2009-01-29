@@ -4,6 +4,16 @@
 (defpackage :rlxtest (:use rlx :common-lisp))
 (in-package :rlxtest)
 
+
+;;; Utils
+
+(defmacro awhen (condition &body body)
+  "Anaphoric when. Acts like a while, but defines the variable
+   'it' in it's lexical scope, containg the value of condition."
+  `(let ((it ,condition))
+     (when it
+       ,@body)))
+    
 ;;; A stupid test world running Conway's Game of Life
 
 (define-prototype test-world (:parent rlx:=world=)
@@ -17,6 +27,9 @@
       [delete-from-world self]
       [drop-cell *active-world* new-cell row column]))
 
+;;; default response to is-star/is-space
+(define-method is-star cell ()
+  nil)
 
 ;;; a 'dead' cell
 
@@ -46,14 +59,16 @@
 (define-method run space ()
   (let ((neighbour-count 
 	 (loop for direction in (list :north :east :west :south)
-	    count [is-star [find self :direction direction]])))
+	    count (awhen [find self :direction direction]
+			 [is-star it]))))
     (when (= neighbour-count 2) 
       [replace-with self (clone =star=)])))
 
 (define-method run star ()
   (let ((neighbour-count 
 	 (loop for direction in (list :north :east :west :south)
-	    count [is-star [find self :direction direction]])))
+	    count (awhen [find self :direction direction]
+			 [is-star it]))))
     (cond ((< neighbour-count 2) [replace-with self (clone =space=)])
 	  ((> neighbour-count 3) [replace-with self (clone =space=)]))))
 
@@ -65,7 +80,7 @@
     (dotimes (i height)
       (dotimes (j width)
 	[drop-cell self (clone =space=) i j]))
-    (dotimes (i 1000)
+    (dotimes (i 4000)
       [drop-cell self (clone =star=) (random height) (random width)])
     ))
 

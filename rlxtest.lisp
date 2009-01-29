@@ -46,14 +46,14 @@
 (define-method run space ()
   (let ((neighbour-count 
 	 (loop for direction in (list :north :east :west :south)
-	    count [is-star [find-cell self :direction direction]])))
+	    count [is-star [find self :direction direction]])))
     (when (= neighbour-count 2) 
       [replace-with self (clone =star=)])))
 
 (define-method run star ()
   (let ((neighbour-count 
 	 (loop for direction in (list :north :east :west :south)
-	    count [is-star [find-cell self :direction direction]])))
+	    count [is-star [find self :direction direction]])))
     (cond ((< neighbour-count 2) [replace-with self (clone =space=)])
 	  ((> neighbour-count 3) [replace-with self (clone =space=)]))))
 
@@ -73,19 +73,23 @@
   (default-keybindings :initform 
       '(("W" nil "move :north .")
 	("Q" nil "quit .")
+	("SPACE" nil "skip-turn .")
 	)))
-
 
 (define-prototype dummy-player (:parent rlx:=cell=)
   (tile :initform "player")
   (categories :initform '(:actor :player))
   (movement-cost :initform (make-stat :base 7)))
 
+(define-method skip-turn dummy-player ()
+  (format t "Skipping a turn")
+  [expend-action-points self <action-points>])
+
 (define-method quit dummy-player ()
     (prog1 nil (rlx:quit :shutdown)))
 
 (define-method forward dummy-player (key msg)
-  (format t "player got message: ~A, ~A~%" key msg))
+  (format t "player didn't understand message: ~A, ~A~%" key msg))
 
 (defun testgame ()
   (setf rlx:*screen-height* 600)
@@ -104,11 +108,12 @@
     [drop-cell world player 10 10]
 
     ;;prompt
+  
+    [install-default-keybindings player-prompt]
     [resize player-prompt :height 30 :width 400]
-    [move player-prompt :x 0 :y 770]
-    [set-mode player-prompt :forward]
-    [set-receiver player-prompt player]
-    
+    [move player-prompt :x 0 :y 0]
+    [set-receiver player-prompt world]
+    [hide player-prompt]
     ;;viewport
     (setf viewport (clone =viewport=))
     [set-world viewport world]

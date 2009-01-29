@@ -1,3 +1,6 @@
+(eval-when (:execute :load-toplevel :compile-toplevel) 
+  (require :rlx))
+
 (defpackage :rlxtest (:use rlx :common-lisp))
 (in-package :rlxtest)
 
@@ -62,14 +65,15 @@
     (dotimes (i height)
       (dotimes (j width)
 	[drop-cell self (clone =space=) i j]))
-    (dotimes (i 140)
+    (dotimes (i 1000)
       [drop-cell self (clone =star=) (random height) (random width)])
     ))
 
 (define-prototype testgame-prompt (:parent rlx:=prompt=)
-  (default-keybindings :initform '(("W" nil "move :north .")
-				   ("Q" nil "quit .")
-				   )))
+  (default-keybindings :initform 
+      '(("W" nil "move :north .")
+	("Q" nil "quit .")
+	)))
 
 
 (define-prototype dummy-player (:parent rlx:=cell=)
@@ -79,6 +83,9 @@
 
 (define-method quit dummy-player ()
     (prog1 nil (rlx:quit :shutdown)))
+
+(define-method forward dummy-player (key msg)
+  (format t "player got message: ~A, ~A~%" key msg))
 
 (defun testgame ()
   (setf rlx:*screen-height* 600)
@@ -91,7 +98,6 @@
     (setf *active-world* world)
     [create-default-grid world]
     [generate world]
-    [start world]
 
     ;;player
     [set-player world player]
@@ -100,8 +106,8 @@
     ;;prompt
     [resize player-prompt :height 30 :width 400]
     [move player-prompt :x 0 :y 770]
-    [set-receiver player-prompt player]
     [set-mode player-prompt :forward]
+    [set-receiver player-prompt player]
     
     ;;viewport
     (setf viewport (clone =viewport=))
@@ -111,4 +117,10 @@
     [set-origin viewport :x 10 :y 90 :height 20 :width 25]
     [adjust viewport]
 
+    ;; go !
+    [start world]
+
+
     (install-widgets (list viewport player-prompt))))
+
+(testgame)

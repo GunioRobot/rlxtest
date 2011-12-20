@@ -1,4 +1,4 @@
-(eval-when (:execute :load-toplevel :compile-toplevel) 
+(eval-when (:execute :load-toplevel :compile-toplevel)
   (require :rlx))
 
 (defpackage :rlxtest (:use rlx :common-lisp))
@@ -13,7 +13,7 @@
   `(let ((it ,condition))
      (when it
        ,@body)))
-    
+
 ;;; A stupid test world running Conway's Game of Life
 
 (define-prototype test-world (:parent rlx:=world=)
@@ -42,7 +42,7 @@
 (define-method is-space space ()
   t)
 
-	   
+
 ;; an 'alive' cell
 
 (define-prototype star (:parent rlx:=cell=)
@@ -57,15 +57,15 @@
 ;; game of life rules, inefficient (constantly delete/drop cells), but meh
 
 (define-method run space ()
-  (let ((neighbour-count 
+  (let ((neighbour-count
 	 (loop for direction in (list :north :east :west :south)
 	    count (awhen [find self :direction direction]
 			 [is-star it]))))
-    (when (= neighbour-count 2) 
+    (when (= neighbour-count 2)
       [replace-with self (clone =star=)])))
 
 (define-method run star ()
-  (let ((neighbour-count 
+  (let ((neighbour-count
 	 (loop for direction in (list :north :east :west :south)
 	    count (awhen [find self :direction direction]
 			 [is-star it]))))
@@ -85,7 +85,7 @@
     ))
 
 (define-prototype testgame-prompt (:parent rlx:=prompt=)
-  (default-keybindings :initform 
+  (default-keybindings :initform
       '(("W" nil "move :north .")
 	("Q" nil "quit .")
 	("SPACE" nil "skip-turn .")
@@ -123,7 +123,7 @@
     [drop-cell world player 10 10]
 
     ;;prompt
-  
+
     [install-default-keybindings player-prompt]
     [resize player-prompt :height 30 :width 400]
     [move player-prompt :x 0 :y 0]
